@@ -70,6 +70,14 @@ export default {
     clearPrompts() {
       this.prompts = [];
     },
+    playAudio(base64AudioData) {
+      const audio = new Audio(`data:audio/mpeg;base64,${base64AudioData}`);
+      audio.play();
+    },
+
+
+
+
     submitForm() {
       this.loading = true;
       fetch("/api", {
@@ -84,7 +92,8 @@ export default {
       })
         .then((response) => response.json())
         .then((json) => {
-          let result = json.result;
+          let result = json.text;
+          let audioData = json.audioData;
 
           this.prompts.push({
             prompt: this.prompt,
@@ -93,8 +102,10 @@ export default {
           this.prompt = "";
           this.loading = false;
           this.scrollToBottom();
+          this.playAudio(audioData);
         });
     },
+
   },
 };
 </script>
