@@ -38,28 +38,57 @@ app.use(express.json());
 
 
 app.post("/api", async (req, res) => {
-  const agentResponse = await fetch(`${endpoint}/api/v1/agents/${agent_id}/run`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${api_access_token}`,
-    },
-    body: JSON.stringify({
-      input: req.body.input,
-      history: req.body.history,
-    }),
-  });
-
-  const data = await agentResponse.json();
-
   try {
-    const audioData = await textToSpeech(data.output);
-    const audioDataB64 = Buffer.from(audioData).toString("base64");
-    res.status(200).json({ text: data.output, audioData: audioDataB64 });
+    const response = await fetch(`${endpoint}/api/v1/agents/${agent_id}/run`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${api_access_token}`,
+      },
+      body: JSON.stringify({
+        input: req.body.input,
+        history: req.body.history,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Error with AGHQ request:', await response.text());
+      return res.status(response.status).send('Error with AGHQ request');
+    }
+
+    const data = await response.json();
+    const textResponse = data.result;
+
+    const ttsResponse = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "xi-api-key": elevenLabsApiKey,
+      },
+      body: JSON.stringify({
+        text: textResponse,
+      }),
+    });
+
+    if (!ttsResponse.ok) {
+      console.error('Error with ElevenLabs TTS request:', await ttsResponse.text());
+      return res.status(ttsResponse.status).send('Error with ElevenLabs TTS request');
+    }
+
+    const audioBuffer = await ttsResponse.arrayBuffer();
+    const audioData = Buffer.from(audioBuffer).toString("base64");
+
+    res.status(200).json({ text: textResponse, audioData });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Unexpected error:', error);
+    res.status(500).send('Unexpected error');
   }
 });
+
+
+
+
+
 
 
 export const handler = app;
