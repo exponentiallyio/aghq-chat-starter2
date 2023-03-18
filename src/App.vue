@@ -136,7 +136,7 @@ export default {
     >
       <h2 class="ui center aligned inverted header">Exponential Coach</h2>
       <h1 class="ui center aligned page header">
-        <span class="text">{{ appName }}</span>
+        <span class="text" style="color: white;">{{ appName }}</span>
       </h1>
 
       <form
