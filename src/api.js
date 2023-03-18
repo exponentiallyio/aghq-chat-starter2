@@ -1,18 +1,32 @@
 import fetch from "node-fetch";
 import express from "express";
-const elevenLabsApiBaseUrl = import.meta.env.VITE_ELEVENLABS_API_BASE_URL;
-const elevenLabsApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
-const elevenLabsVoiceId = import.meta.env.VITE_ELEVENLABS_VOICE_ID;
+// Removed
+// const elevenLabsApiBaseUrl = import.meta.env.VITE_ELEVENLABS_API_BASE_URL;
+// const elevenLabsApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
+// const elevenLabsVoiceId = import.meta.env.VITE_ELEVENLABS_VOICE_ID;
 
+// Added
+const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
+
+
+// Updated function to use Google Cloud Text-to-speech
 async function textToSpeech(text) {
-  const response = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
+  const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${googleCloudApiKey}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "xi-api-key": elevenLabsApiKey,
     },
     body: JSON.stringify({
-      text,
+      input: {
+        text: text,
+      },
+      voice: {
+        languageCode: "en-US",
+        name: "en-US-Wavenet-A",
+      },
+      audioConfig: {
+        audioEncoding: "LINEAR16",
+      },
     }),
   });
 
@@ -20,8 +34,11 @@ async function textToSpeech(text) {
     throw new Error(`Text-to-speech API call failed: ${response.statusText}`);
   }
 
-  return await response.arrayBuffer();
+  const data = await response.json();
+  const audioBuffer = Buffer.from(data.audioContent, "base64");
+  return audioBuffer;
 }
+
 
 
 let endpoint = "https://app.agent-hq.io";
