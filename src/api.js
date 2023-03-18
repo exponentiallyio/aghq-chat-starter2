@@ -28,7 +28,7 @@ async function textToSpeech(text) {
       },
       audioConfig: {
         audioEncoding: "LINEAR16",
-        pitch: 10.0, // Adjust the pitch
+        pitch: 6.0, // Adjust the pitch
         speakingRate: 1.0, // Adjust the speaking rate
       },
     }),

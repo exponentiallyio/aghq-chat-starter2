@@ -191,7 +191,7 @@ export default {
           </tr>
           <tr class="hover-parent response">
             <td class="collapsing top aligned">
-              <em data-emoji=":dog face:" class="medium"></em>
+              <em data-emoji=":dog:" class="medium"></em>
             </td>
             <td class="top aligned">
               <div>
