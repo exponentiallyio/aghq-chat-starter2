@@ -6,6 +6,8 @@ import express from "express";
 // const elevenLabsVoiceId = import.meta.env.VITE_ELEVENLABS_VOICE_ID;
 
 // Added
+const googleCloudLanguageCode = import.meta.env.VITE_GOOGLE_CLOUD_LANGUAGE_CODE;
+const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
 
 
@@ -21,8 +23,8 @@ async function textToSpeech(text) {
         text: text,
       },
       voice: {
-        languageCode: "en-US",
-        name: "en-US-Wavenet-A",
+        languageCode: googleCloudLanguageCode,
+        name: googleCloudVoiceID,
       },
       audioConfig: {
         audioEncoding: "LINEAR16",
