@@ -134,9 +134,8 @@ export default {
         background: #000;
       "
     >
-      <h2 class="ui center aligned inverted header">Exponential Coach</h2>
       <h1 class="ui center aligned page header">
-        <span class="text" style="color: white;">{{ appName }}</span>
+        <span class="text" style="color: black;">{{ appName }}</span>
       </h1>
 
       <form
@@ -192,7 +191,7 @@ export default {
           </tr>
           <tr class="hover-parent response">
             <td class="collapsing top aligned">
-              <em data-emoji=":star2:" class="medium"></em>
+              <em data-emoji=":dog face:" class="medium"></em>
             </td>
             <td class="top aligned">
               <div>
