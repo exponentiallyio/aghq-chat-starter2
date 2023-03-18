@@ -131,7 +131,7 @@ export default {
         z-index: 9999;
         padding-top: 2em;
         padding-bottom: 2em;
-        background: #000;
+        background: #fff;
       "
     >
       <h1 class="ui center aligned page header">
