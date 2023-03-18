@@ -32,7 +32,10 @@ async function textToSpeech(text) {
     }),
   });
 
+
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Error details:', errorText);
     throw new Error(`Text-to-speech API call failed: ${response.statusText}`);
   }
 
