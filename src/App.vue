@@ -135,7 +135,7 @@ export default {
       "
     >
       <h1 class="ui center aligned page header">
-        <span class="text" style="color: black;">{{ appName }}</span>
+        <span class="text">{{ appName }}</span>
       </h1>
 
       <form
