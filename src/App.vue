@@ -1,5 +1,5 @@
 <script>
-const speechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
+import annyang from "annyang";
 
 export default {
   name: "App",
@@ -39,7 +39,9 @@ export default {
   methods: {
     stopListening() {
       this.listening = false;
-      this.recognition.stop();
+      if (annyang) {
+        annyang.abort();
+      }
     },
     listen() {
       if (this.listening) {
@@ -48,16 +50,25 @@ export default {
       }
       const $this = this;
       $this.listening = true;
-      $this.recognition = new speechRecognition();
-      $this.recognition.lang = $this.browserLanguage;
 
-      $this.recognition.start();
-      $this.recognition.onresult = function (event) {
-        const transcript = event.results[0][0].transcript;
-        $this.prompt = transcript;
-        $this.submitForm(transcript, true);
-        $this.listening = false;
-      };
+      if (annyang) {
+        annyang.setLanguage($this.browserLanguage);
+
+        // Define a command that submits the form with the recognized text
+        const commands = {
+          "*transcript": function (transcript) {
+            $this.prompt = transcript;
+            $this.submitForm(transcript, true);
+            $this.stopListening();
+          },
+        };
+
+        // Add the commands to annyang
+        annyang.addCommands(commands);
+
+        // Start listening
+        annyang.start();
+      }
     },
     scrollToBottom() {
       this.$nextTick(() => {
