@@ -76,24 +76,10 @@ app.post("/api", async (req, res) => {
     const data = await response.json();
     const textResponse = data.result;
 
-    const ttsResponse = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": elevenLabsApiKey,
-      },
-      body: JSON.stringify({
-        text: textResponse,
-      }),
-    });
-
-    if (!ttsResponse.ok) {
-      console.error('Error with ElevenLabs TTS request:', await ttsResponse.text());
-      return res.status(ttsResponse.status).send('Error with ElevenLabs TTS request');
-    }
-
-    const audioBuffer = await ttsResponse.arrayBuffer();
-    const audioData = Buffer.from(audioBuffer).toString("base64");
+    // Removed the old ElevenLabs TTS request
+    // Replaced with the updated textToSpeech function
+    const audioBuffer = await textToSpeech(textResponse);
+    const audioData = audioBuffer.toString("base64");
 
     res.status(200).json({ text: textResponse, audioData });
   } catch (error) {
@@ -101,6 +87,7 @@ app.post("/api", async (req, res) => {
     res.status(500).send('Unexpected error');
   }
 });
+
 
 
 
