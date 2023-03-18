@@ -131,10 +131,11 @@ export default {
         z-index: 9999;
         padding-top: 2em;
         padding-bottom: 2em;
-        background: #fff;
+        background: #000;
       "
     >
-      <h1 class="ui page header">
+      <h2 class="ui center aligned inverted header">Exponential Coach</h2>
+      <h1 class="ui center aligned page header">
         <span class="text">{{ appName }}</span>
       </h1>
 
@@ -191,7 +192,7 @@ export default {
           </tr>
           <tr class="hover-parent response">
             <td class="collapsing top aligned">
-              <em data-emoji=":robot:" class="medium"></em>
+              <em data-emoji=":star2:" class="medium"></em>
             </td>
             <td class="top aligned">
               <div>
