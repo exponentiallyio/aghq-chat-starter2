@@ -150,11 +150,7 @@ export default {
 
 <template>
   <div class="ui basic segment">
-    <div
-      class="ui active blurring page inverted content dimmer"
-      @click="stopListening"
-      style="z-index: 9999000"
-    >
+    <div :class="{ 'ui blurring page inverted content dimmer': true, active: recording }" @click="stopRecording" style="z-index: 9999000">
       <div class="content">
         <h2 class="ui inverted icon header">
           <i ref="microphone" class="icon microphone red"></i>
