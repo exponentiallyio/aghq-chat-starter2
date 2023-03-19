@@ -12,8 +12,8 @@ const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
 
 // For Azure STT
-const fs = require("fs");
-const sdk = require("microsoft-cognitiveservices-speech-sdk");
+import fs from "fs";
+import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 
 const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.SPEECH_KEY, process.env.SPEECH_REGION);
 speechConfig.speechRecognitionLanguage = "en-US";
