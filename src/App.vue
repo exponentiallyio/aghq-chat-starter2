@@ -1,5 +1,4 @@
 <script>
-import annyang from "annyang";
 
 export default {
   name: "App",
@@ -20,7 +19,8 @@ export default {
       prompts: [],
       selectedPromptIndex: null,
       loading: false,
-      listening: false,
+      recording: false,
+      transcription: '',
     };
   },
   mounted() {
@@ -37,38 +37,37 @@ export default {
     },
   },
   methods: {
-    stopListening() {
-      this.listening = false;
-      if (annyang) {
-        annyang.abort();
-      }
+    async startRecording() {
+      this.recording = true;
+      this.mediaRecorder = await this.createMediaRecorder();
+      this.chunks = [];
+      this.mediaRecorder.ondataavailable = (event) => {
+        this.chunks.push(event.data);
+      };
+      this.mediaRecorder.start();
     },
-    listen() {
-      if (this.listening) {
-        this.stopListening();
-        return;
-      }
-      const $this = this;
-      $this.listening = true;
 
-      if (annyang) {
-        annyang.setLanguage($this.browserLanguage);
+    stopRecording() {
+      this.recording = false;
+      this.mediaRecorder.stop();
+      this.mediaRecorder.onstop = () => {
+        const blob = new Blob(this.chunks, { type: "audio/webm" });
+        this.chunks = [];
+        this.submitForm(blob);
+      };
+    },
 
-        // Define a command that submits the form with the recognized text
-        const commands = {
-          "*transcript": function (transcript) {
-            $this.prompt = transcript;
-            $this.submitForm(transcript, true);
-            $this.stopListening();
-          },
-        };
-
-        // Add the commands to annyang
-        annyang.addCommands(commands);
-
-        // Start listening
-        annyang.start();
-      }
+    createMediaRecorder() {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const mediaRecorder = new MediaRecorder(stream);
+          resolve(mediaRecorder);
+        } catch (err) {
+          console.error("Error creating MediaRecorder:", err);
+          reject(err);
+        }
+      });
     },
     scrollToBottom() {
       this.$nextTick(() => {
@@ -86,20 +85,42 @@ export default {
       audio.play();
     },
 
-
-
-
-    submitForm() {
+    async submitForm(audioBlob = null) {
       this.loading = true;
+
+      const formData = new FormData();
+      formData.append("input", this.prompt);
+      formData.append("history", JSON.stringify(this.prompts));
+      if (audioBlob) {
+        formData.append("audio", audioBlob);
+
+        // Send the audio data to the /api/transcribe endpoint
+        try {
+          const audioData = await new Response(audioBlob).arrayBuffer();
+          const response = await fetch('/api/transcribe', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              audioData,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Error transcribing audio');
+          }
+
+          const data = await response.json();
+          this.transcription = data.transcription;
+        } catch (error) {
+          console.error('Error:', error.message);
+        }
+      }
+
       fetch("/api", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          input: this.prompt,
-          history: this.prompts,
-        }),
+        body: formData,
       })
         .then((response) => response.json())
         .then((json) => {
@@ -116,7 +137,6 @@ export default {
           this.playAudio(audioData);
         });
     },
-
   },
 };
 </script>
@@ -124,7 +144,6 @@ export default {
 <template>
   <div class="ui basic segment">
     <div
-      v-show="listening"
       class="ui active blurring page inverted content dimmer"
       @click="stopListening"
       style="z-index: 9999000"
@@ -157,12 +176,11 @@ export default {
       >
         <div class="field">
           <div class="ui right action left icon input">
-            <i class="microphone icon link" @click="listen"></i>
+            <i v-if="!recording" class="microphone icon link" @click="startRecording"></i>
+            <i v-if="recording" class="stop icon link" @click="stopRecording"></i>
             <input
               type="text"
               ref="input"
-              @keydown.esc.stop.prevent="stopListening"
-              @keydown.shift.space.exact.stop.prevent="listen"
               @keydown.enter.exact.stop.prevent="submitForm"
               @focus="focused = true"
               @blur="focused = false"
@@ -182,6 +200,9 @@ export default {
           </div>
         </div>
       </form>
+      <div class="transcription" style="margin-top: 1em;">
+        <strong>Transcription:</strong> {{ transcription }}
+      </div>
     </div>
 
     <div style="margin-top: 2em">

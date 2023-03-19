@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import express from "express";
+
 // Removed
 // const elevenLabsApiBaseUrl = import.meta.env.VITE_ELEVENLABS_API_BASE_URL;
 // const elevenLabsApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
@@ -9,6 +10,40 @@ import express from "express";
 const googleCloudLanguageCode = import.meta.env.VITE_GOOGLE_CLOUD_LANGUAGE_CODE;
 const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
+
+// For Azure STT
+const fs = require("fs");
+const sdk = require("microsoft-cognitiveservices-speech-sdk");
+
+const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.SPEECH_KEY, process.env.SPEECH_REGION);
+speechConfig.speechRecognitionLanguage = "en-US";
+
+// function to handle audio data received from the client-side
+async function transcribeAudio(audioBuffer) {
+  const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.SPEECH_KEY, process.env.SPEECH_REGION);
+  speechConfig.speechRecognitionLanguage = "en-US";
+
+  const audioConfig = sdk.AudioConfig.fromStreamInput(new MemoryStream(audioBuffer));
+  const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+
+  return new Promise((resolve, reject) => {
+    recognizer.recognizeOnceAsync(
+      (result) => {
+        recognizer.close();
+
+        if (result.reason === sdk.ResultReason.RecognizedSpeech) {
+          resolve(result.text);
+        } else {
+          reject(new Error("Failed to recognize speech"));
+        }
+      },
+      (error) => {
+        recognizer.close();
+        reject(error);
+      }
+    );
+  });
+}
 
 
 // Updated function to use Google Cloud Text-to-speech
@@ -92,6 +127,17 @@ app.post("/api", async (req, res) => {
   } catch (error) {
     console.error('Unexpected error:', error);
     res.status(500).send('Unexpected error');
+  }
+});
+
+// Add the new /api/transcribe route for Azure below your existing /api route
+app.post('/api/transcribe', async (req, res) => {
+  try {
+    const audioBuffer = req.body.audioData;
+    const transcription = await transcribeAudio(audioBuffer);
+    res.json({ transcription });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
