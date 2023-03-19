@@ -61,13 +61,21 @@ export default {
         const blob = new Blob(this.chunks, { type: "audio/webm" });
         this.chunks = [];
         this.submitForm(blob);
+
+        // Close the stream after the recording stops
+        if (this.stream) {
+          this.stream.getTracks().forEach(track => track.stop());
+          this.stream = null;
+        }
       };
     },
+
 
     createMediaRecorder() {
       return new Promise(async (resolve, reject) => {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          this.stream = stream; // Store the stream in your component data
           const mediaRecorder = new MediaRecorder(stream);
           resolve(mediaRecorder);
         } catch (err) {
@@ -76,6 +84,7 @@ export default {
         }
       });
     },
+
     scrollToBottom() {
       this.$nextTick(() => {
         var promptElements = document.querySelectorAll(".prompt");
