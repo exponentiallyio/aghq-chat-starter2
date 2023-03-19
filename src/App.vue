@@ -38,6 +38,7 @@ export default {
   },
   methods: {
     async startRecording() {
+      console.log("Starting recording...");
       this.recording = true;
       this.mediaRecorder = await this.createMediaRecorder();
       this.chunks = [];
@@ -48,6 +49,7 @@ export default {
     },
 
     stopRecording() {
+      console.log("Stopping recording...");
       this.recording = false;
       this.mediaRecorder.stop();
       this.mediaRecorder.onstop = () => {
