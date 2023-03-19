@@ -37,6 +37,11 @@ export default {
     },
   },
   methods: {
+    stopListening() {
+      if (this.recording) {
+        this.stopRecording();
+      }
+    },
     async startRecording() {
       console.log("Starting recording...");
       this.recording = true;
