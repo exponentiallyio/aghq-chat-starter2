@@ -110,7 +110,7 @@ export default {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              audioData,
+              audioData: Array.from(new Uint8Array(audioData)), // Convert ArrayBuffer to Array
             }),
           });
 
