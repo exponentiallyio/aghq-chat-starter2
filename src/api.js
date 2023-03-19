@@ -131,20 +131,41 @@ app.post("/api", async (req, res) => {
 });
 
 // Add the new /api/transcribe route for Azure below your existing /api route
-app.post('/api/transcribe', async (req, res) => {
+app.post("/api/transcribe", async (req, res) => {
   try {
-    const audioBuffer = req.body.audioData;
-    const transcription = await transcribeAudio(audioBuffer);
-    res.json({ transcription });
+    const { audioData } = req.body;
+    const buffer = Buffer.from(audioData);
+
+    // Set up the Azure Speech Service client
+    const speechConfig = sdk.SpeechConfig.fromSubscription(azureKey, azureRegion);
+    speechConfig.speechRecognitionLanguage = "en-US";
+
+    // Create an audio stream from the buffer
+    const pushStream = sdk.AudioInputStream.createPushStream();
+    pushStream.write(buffer);
+    pushStream.close();
+
+    // Set up the speech recognizer
+    const audioConfig = sdk.AudioConfig.fromStreamInput(pushStream);
+    const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+
+    // Start the recognition and return the result
+    recognizer.recognizeOnceAsync(
+      (result) => {
+        recognizer.close();
+        res.json({ transcription: result.text });
+      },
+      (err) => {
+        recognizer.close();
+        console.error("Error in transcription:", err);
+        res.status(500).send("Error transcribing audio");
+      }
+    );
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error in /api/transcribe:", error);
+    res.status(500).send("Error processing request");
   }
 });
-
-
-
-
-
 
 
 
