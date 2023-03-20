@@ -24,7 +24,7 @@ speechConfig.speechRecognitionLanguage = "en-US";
 
 // function to handle audio data received from the client-side
 async function transcribeAudio(audioBuffer) {
-  const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.SPEECH_KEY, process.env.SPEECH_REGION);
+  const speechConfig = sdk.SpeechConfig.fromSubscription(azureKey, azureRegion);
   speechConfig.speechRecognitionLanguage = "en-US";
 
   const audioConfig = sdk.AudioConfig.fromStreamInput(new MemoryStream(audioBuffer));
