@@ -57,10 +57,22 @@ export default {
       console.log("Stopping recording...");
       this.recording = false;
       this.mediaRecorder.stop();
-      this.mediaRecorder.onstop = () => {
+
+      this.mediaRecorder.onstop = async () => {
         const blob = new Blob(this.chunks, { type: "audio/webm" });
         this.chunks = [];
-        this.submitForm(blob);
+
+        // Log the length of the audio data
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const audioData = reader.result;
+          console.log("Recording stopped, audio data length:", audioData.byteLength);
+
+          // You can add the code to download the recorded audio here if needed
+
+          this.submitForm(blob);
+        };
+        reader.readAsArrayBuffer(blob);
 
         // Close the stream after the recording stops
         if (this.stream) {
@@ -69,6 +81,7 @@ export default {
         }
       };
     },
+
 
 
     createMediaRecorder() {
@@ -120,6 +133,7 @@ export default {
             },
             body: JSON.stringify({
               audioData: Array.from(new Uint8Array(audioData)), // Convert ArrayBuffer to Array
+              console.log("Client-side audio data:", audioData);
             }),
           });
 
