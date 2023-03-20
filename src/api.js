@@ -6,14 +6,13 @@ import express from "express";
 // const elevenLabsApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 // const elevenLabsVoiceId = import.meta.env.VITE_ELEVENLABS_VOICE_ID;
 
-// Added
-const googleCloudLanguageCode = import.meta.env.VITE_GOOGLE_CLOUD_LANGUAGE_CODE;
-const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
-const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
+// Remove VITE_ prefix
+const googleCloudLanguageCode = process.env.GOOGLE_CLOUD_LANGUAGE_CODE;
+const googleCloudVoiceID = process.env.GOOGLE_CLOUD_VOICE_ID;
+const googleCloudApiKey = process.env.GOOGLE_CLOUD_API_KEY;
 
-const azureKey = import.meta.env.VITE_AZURE_SPEECH_KEY;
-const azureRegion = import.meta.env.VITE_AZURE_SPEECH_REGION;
-
+const azureKey = process.env.AZURE_SPEECH_KEY;
+const azureRegion = process.env.AZURE_SPEECH_REGION;
 
 // For Azure STT
 import fs from "fs";
