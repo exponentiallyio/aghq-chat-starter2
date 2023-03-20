@@ -154,12 +154,14 @@ app.post("/api/transcribe", async (req, res) => {
     const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
 
 
+
     // Start the recognition and return the result
     recognizer.recognizeOnceAsync(
       (result) => {
         recognizer.close();
         const transcription = result.text || "No transcription found";
         console.log("Server-side transcription:", transcription);
+        console.log("Recognition result object:", result);
         res.json({ transcription: transcription });
       },
       (err) => {
