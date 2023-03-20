@@ -11,8 +11,8 @@ const googleCloudLanguageCode = import.meta.env.VITE_GOOGLE_CLOUD_LANGUAGE_CODE;
 const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
 
-const azureKey = import.meta.env.AZURE_SPEECH_KEY;
-const azureRegion = import.meta.env.AZURE_SPEECH_REGION;
+const azureKey = import.meta.env.VITE_AZURE_SPEECH_KEY;
+const azureRegion = import.meta.env.VITE_AZURE_SPEECH_REGION;
 
 
 // For Azure STT
