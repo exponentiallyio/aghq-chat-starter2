@@ -169,6 +169,7 @@ export default {
       const data = await response.json();
       this.transcription = data.transcription;
       console.log("Client-side audio data:", audioData);
+      console.log("Server-side transcription data:", data);
       console.log("Transcription:", this.transcription);
     },
 

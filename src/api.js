@@ -153,12 +153,14 @@ app.post("/api/transcribe", async (req, res) => {
     const audioConfig = sdk.AudioConfig.fromStreamInput(pushStream);
     const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
 
+
     // Start the recognition and return the result
     recognizer.recognizeOnceAsync(
       (result) => {
         recognizer.close();
-        console.log("Transcription result:", result);
-        res.json({ transcription: result.text });
+        const transcription = result.text || "No transcription found";
+        console.log("Server-side transcription:", transcription);
+        res.json({ transcription: transcription });
       },
       (err) => {
         recognizer.close();
@@ -166,6 +168,7 @@ app.post("/api/transcribe", async (req, res) => {
         res.status(500).send("Error transcribing audio");
       }
     );
+
   } catch (error) {
     console.error("Error in /api/transcribe:", error);
     res.status(500).send("Error processing request");
