@@ -138,6 +138,7 @@ app.post("/api/transcribe", async (req, res) => {
   try {
     const { audioData } = req.body;
     const buffer = Buffer.from(audioData);
+    console.log("Audio data received:", audioData);
 
     // Set up the Azure Speech Service client
     const speechConfig = sdk.SpeechConfig.fromSubscription(azureKey, azureRegion);
@@ -156,6 +157,7 @@ app.post("/api/transcribe", async (req, res) => {
     recognizer.recognizeOnceAsync(
       (result) => {
         recognizer.close();
+        console.log("Transcription result:", result);
         res.json({ transcription: result.text });
       },
       (err) => {
@@ -169,6 +171,7 @@ app.post("/api/transcribe", async (req, res) => {
     res.status(500).send("Error processing request");
   }
 });
+
 
 
 
