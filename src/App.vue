@@ -10,7 +10,7 @@ export default {
     },
     appName: {
       type: String,
-      default: import.meta.env.VITE_APP_NAME || "Chatbot",
+      default: import.meta.env.VITE_APP_NAME || "MasterComm",
     },
   },
   data() {
