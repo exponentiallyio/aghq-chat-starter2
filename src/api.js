@@ -134,7 +134,7 @@ app.post("/api", async (req, res) => {
 app.post("/api/transcribe", async (req, res) => {
   try {
     const { audioData } = req.body;
-    const buffer = Buffer.from(audioData.buffer);
+    const buffer = Buffer.from(audioData);
 
     // Set up the Azure Speech Service client
     const speechConfig = sdk.SpeechConfig.fromSubscription(azureKey, azureRegion);
