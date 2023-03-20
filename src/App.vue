@@ -66,11 +66,9 @@ export default {
         const reader = new FileReader();
         reader.onloadend = async () => {
           const audioData = reader.result;
-          console.log("Recording stopped, audio data length:", audioData.byteLength);
+          console.log("Client-side audio data:", audioData);
 
-          // You can add the code to download the recorded audio here if needed
-
-          this.submitForm(blob);
+          this.submitForm(blob, audioData);
         };
         reader.readAsArrayBuffer(blob);
 
@@ -81,6 +79,7 @@ export default {
         }
       };
     },
+
 
 
 
@@ -123,26 +122,10 @@ export default {
       if (audioBlob) {
         formData.append("audio", audioBlob);
 
-        // Send the audio data to the /api/transcribe endpoint
+        // Transcribe the audio data
         try {
           const audioData = await new Response(audioBlob).arrayBuffer();
-          const response = await fetch('/api/transcribe', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              audioData: Array.from(new Uint8Array(audioData)), // Convert ArrayBuffer to Array
-              console.log("Client-side audio data:", audioData);
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Error transcribing audio');
-          }
-
-          const data = await response.json();
-          this.transcription = data.transcription;
+          await this.transcribeAudio(audioData);
         } catch (error) {
           console.error('Error:', error.message);
         }
@@ -167,6 +150,28 @@ export default {
           this.playAudio(audioData);
         });
     },
+
+    async transcribeAudio(audioData) {
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          audioData: Array.from(new Uint8Array(audioData)), // Convert ArrayBuffer to Array
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error transcribing audio');
+      }
+
+      const data = await response.json();
+      this.transcription = data.transcription;
+      console.log("Client-side audio data:", audioData);
+      console.log("Transcription:", this.transcription);
+    },
+
   },
 };
 </script>
