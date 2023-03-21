@@ -137,6 +137,7 @@ export default {
       <h1 class="ui center aligned page header">
         <span class="text">{{ appName }}</span>
       </h1>
+      <h2 class="ui center aligned header">“Communication is the most important skill any leader can possess.” – Richard Branson</h2> <!-- Add this line for the subtitle -->
 
       <form
         ref="form"
