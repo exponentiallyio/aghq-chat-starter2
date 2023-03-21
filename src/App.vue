@@ -1,10 +1,6 @@
 <script>
 const speechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
 
-// Add these lines at the top of your script in App.vue
-import { isIOS, createSpeechInput, setupSpeechInput } from "./speechrecognition";
-
-
 export default {
   name: "App",
   props: {
@@ -44,36 +40,6 @@ export default {
     stopListening() {
       this.listening = false;
       this.recognition.stop();
-    },
-    listen() {
-      if (this.listening) {
-        this.stopListening();
-        return;
-      }
-
-      const $this = this;
-      $this.listening = true;
-
-      if (isIOS()) {
-        const input = createSpeechInput();
-        setupSpeechInput(input, (recognizedText) => {
-          $this.prompt = recognizedText;
-          $this.submitForm(recognizedText, true);
-          $this.listening = false;
-        });
-        input.click(); // Start the speech recognition
-      } else {
-        $this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        $this.recognition.lang = $this.browserLanguage;
-
-        $this.recognition.start();
-        $this.recognition.onresult = function (event) {
-          const transcript = event.results[0][0].transcript;
-          $this.prompt = transcript;
-          $this.submitForm(transcript, true);
-          $this.listening = false;
-        };
-      }
     },
     listen() {
       if (this.listening) {
