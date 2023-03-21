@@ -138,7 +138,7 @@ export default {
         <span class="text">{{ appName }}</span>
       </h1>
   
-      <h2 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em;">“Communication is the most important skill any leader can possess.” – Richard Branson</h2> <!-- Add margin to the subtitle -->
+      <h3 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em;">Da Shark Squishmallow</h3> <!-- Add margin to the subtitle -->
 
       <form
         ref="form"
@@ -193,7 +193,7 @@ export default {
           </tr>
           <tr class="hover-parent response">
             <td class="collapsing top aligned">
-              <em data-emoji=":crown:" class="medium"></em>
+              <em data-emoji=":shark:" class="medium"></em>
             </td>
             <td class="top aligned">
               <div>
