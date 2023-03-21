@@ -2,7 +2,7 @@
 const speechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
 
 // Add these lines at the top of your script in App.vue
-import { isIOS, createSpeechInput, setupSpeechInput } from "./speechRecognition";
+import { isIOS, createSpeechInput, setupSpeechInput } from "./speechrecognition";
 
 
 export default {
