@@ -38,8 +38,10 @@ export default {
     },
   },
   methods: {
+
     stopListening() {
       this.listening = false;
+      this.continuousListening = false; // Add this line to stop continuous listening
       this.recognition.stop();
     },
 
