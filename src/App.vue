@@ -207,6 +207,32 @@ export default {
         <div class="field">
           <div class="ui right action left icon input">
             <i class="microphone icon link" @click="listen"></i>
+            <textarea
+              ref="input"
+              @keydown.esc.stop.prevent="stopListening"
+              @keydown.shift.space.exact.stop.prevent="listen"
+              @keydown.enter.exact.stop.prevent="submitForm"
+              @focus="focused = true"
+              @blur="focused = false"
+              v-model="prompt"
+              rows="1"
+              style="resize: none; padding: 0.67857143em 1em;"
+            ></textarea>
+            <button type="submit" class="ui button primary">Go!</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- OLD NON-resizable single line input
+      <form
+        ref="form"
+        @submit.prevent="submitForm"
+        :class="{ loading }"
+        class="ui huge form bottom"
+      >
+        <div class="field">
+          <div class="ui right action left icon input">
+            <i class="microphone icon link" @click="listen"></i>
             <input
               type="text"
               ref="input"
@@ -217,20 +243,10 @@ export default {
               @blur="focused = false"
               v-model="prompt"
             />
-            <!-- <resize-textarea
-              ref="input"
-              v-model="prompt"
-              @keydown.prevent.enter="submitForm"
-              @focus="focused = true"
-              class="resize"
-              :rows="1"
-              :min-height="55"
-              style="padding: 0.67857143em 1em"
-            ></resize-textarea> -->
             <button type="submit" class="ui button primary">Go!</button>
           </div>
         </div>
-      </form>
+      </form> -->
     </div>
 
     <div style="margin-top: 2em">
