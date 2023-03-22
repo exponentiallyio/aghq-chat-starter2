@@ -48,10 +48,10 @@ export default {
 
   methods: {
 
-    async showTextSlowly(text, delay = 50) {
-        this.displayedResponse = '';
+    async showTextSlowly(text, index, delay = 50) {
+        this.prompts[index].displayedResponse = '';
         for (let i = 0; i < text.length; i++) {
-            this.displayedResponse += text.charAt(i);
+            this.prompts[index].displayedResponse += text.charAt(i);
             await new Promise((resolve) => setTimeout(resolve, delay));
         }
     },
@@ -217,6 +217,8 @@ export default {
           // Get the index of the latest prompt
           const latestPromptIndex = this.prompts.length - 1;
 
+      
+
           // Show the text slowly and then update the response
           this.showTextSlowly(result).then(() => {
             this.$set(this.prompts[latestPromptIndex], "response", result);
@@ -337,11 +339,11 @@ export default {
           <td class="top aligned">
             <div>
               <p>
-                <span
-                  v-html="prompt.displayedResponse"
-                  style="white-space: pre-line"
-                  class="ui large text"
-                ></span>
+                <span 
+                  v-html="prompt.displayedResponse || prompt.response" 
+                  style="white-space: pre-line" 
+                  class="ui large text">
+                </span>
               </p>
             </div>
           </td>
