@@ -22,6 +22,7 @@ export default {
       loading: false,
       listening: false,
       continuousListening: false,
+      displayedResponse: '',
     };
   },
   mounted() {
@@ -46,6 +47,14 @@ export default {
   },
 
   methods: {
+
+    async showTextSlowly(text, delay = 100) {
+        this.displayedResponse = '';
+        for (let i = 0; i < text.length; i++) {
+            this.displayedResponse += text.charAt(i);
+            await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+    },
 
     stopListening() {
       this.listening = false;
@@ -173,10 +182,21 @@ export default {
           let result = json.text;
           let audioData = json.audioData;
 
+          this.showTextSlowly(result).then(() => {
+            this.prompts.push({
+              prompt: this.prompt,
+              response: result,
+            });
+          });
+
+
+          /* Show text all at once
           this.prompts.push({
             prompt: this.prompt,
             response: result,
           });
+          */
+
           this.prompt = "";
           this.loading = false;
           this.scrollToBottom();
@@ -292,11 +312,21 @@ export default {
             <td class="top aligned">
               <div>
                 <p>
+                  <!-- Show delayed response -->
                   <span
+                    v-html="displayedResponse"
+                    style="white-space: pre-line"
+                    class="ui large text"
+                ></span>
+
+
+
+
+                  <!--span SHOW FULL RESPONSE
                     v-html="prompt.response"
                     style="white-space: pre-line"
                     class="ui large text"
-                  ></span>
+                  ></span-->
                 </p>
               </div>
             </td>
