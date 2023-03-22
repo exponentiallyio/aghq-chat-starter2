@@ -1,17 +1,36 @@
 import fetch from "node-fetch";
 import express from "express";
-// Removed
-// const elevenLabsApiBaseUrl = import.meta.env.VITE_ELEVENLABS_API_BASE_URL;
-// const elevenLabsApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
-// const elevenLabsVoiceId = import.meta.env.VITE_ELEVENLABS_VOICE_ID;
+// ElevenLabs Variables
+const elevenLabsApiBaseUrl = import.meta.env.VITE_ELEVENLABS_API_BASE_URL;
+const elevenLabsApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
+const elevenLabsVoiceId = import.meta.env.VITE_ELEVENLABS_VOICE_ID;
 
-// Added
+/* Google Cloud Variables
 const googleCloudLanguageCode = import.meta.env.VITE_GOOGLE_CLOUD_LANGUAGE_CODE;
 const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
+*/
 
+async function textToSpeech(text) {
+  const response = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "xi-api-key": elevenLabsApiKey,
+    },
+    body: JSON.stringify({
+      text,
+    }),
+  });
 
-// Updated function to use Google Cloud Text-to-speech
+  if (!response.ok) {
+    throw new Error(`Text-to-speech API call failed: ${response.statusText}`);
+  }
+
+  return await response.arrayBuffer();
+}
+
+/* Updated function to use Google Cloud Text-to-speech
 async function textToSpeech(text) {
   const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${googleCloudApiKey}`, {
     method: "POST",
@@ -34,7 +53,6 @@ async function textToSpeech(text) {
     }),
   });
 
-
   if (!response.ok) {
     const errorText = await response.text();
     console.error('Error details:', errorText);
@@ -45,6 +63,7 @@ async function textToSpeech(text) {
   const audioBuffer = Buffer.from(data.audioContent, "base64");
   return audioBuffer;
 }
+*/
 
 
 
@@ -54,7 +73,6 @@ if (import.meta.env.VITE_AGHQ_ENDPOINT) {
 }
 
 const api_access_token = import.meta.env.VITE_AGHQ_API_ACCESS_TOKEN;
-
 const agent_id = import.meta.env.VITE_AGHQ_AGENT_ID;
 
 const app = express();
@@ -83,10 +101,32 @@ app.post("/api", async (req, res) => {
     const data = await response.json();
     const textResponse = data.result;
 
-    // Removed the old ElevenLabs TTS request
-    // Replaced with the updated textToSpeech function
-    const audioBuffer = await textToSpeech(textResponse);
-    const audioData = audioBuffer.toString("base64");
+    // Google textToSpeech function
+    //const audioBuffer = await textToSpeech(textResponse);
+    //const audioData = audioBuffer.toString("base64");
+    // Google TTS ends
+
+    // ElevenLabs TTS Starts here
+
+    const ttsResponse = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "xi-api-key": elevenLabsApiKey,
+      },
+      body: JSON.stringify({
+        text: textResponse,
+      }),
+    });
+
+    const audioBuffer = await ttsResponse.arrayBuffer();
+    const audioData = Buffer.from(audioBuffer).toString("base64");
+
+    if (!ttsResponse.ok) {
+      console.error('Error with ElevenLabs TTS request:', await ttsResponse.text());
+      return res.status(ttsResponse.status).send('Error with ElevenLabs TTS request');
+    }
+    //ElevenLabs TTS Ends
 
     res.status(200).json({ text: textResponse, audioData });
   } catch (error) {
@@ -94,10 +134,6 @@ app.post("/api", async (req, res) => {
     res.status(500).send('Unexpected error');
   }
 });
-
-
-
-
 
 
 
