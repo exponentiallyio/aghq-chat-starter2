@@ -49,12 +49,13 @@ export default {
   methods: {
 
     async showTextSlowly(text, index, delay = 50) {
-        this.prompts[index].displayedResponse = '';
+        this.prompts[index].displayedResponse = "";
         for (let i = 0; i < text.length; i++) {
             this.prompts[index].displayedResponse += text.charAt(i);
             await new Promise((resolve) => setTimeout(resolve, delay));
         }
     },
+
 
     stopListening() {
       this.listening = false;
@@ -218,12 +219,10 @@ export default {
           const latestPromptIndex = this.prompts.length - 1;
 
       
-
-          // Show the text slowly and then update the response
-          this.showTextSlowly(result).then(() => {
-            this.$set(this.prompts[latestPromptIndex], "response", result);
-            this.$set(this.prompts[latestPromptIndex], "displayedResponse", this.displayedResponse); // Add this line to update the displayedResponse property in the prompts array
+          this.showTextSlowly(result, latestPromptIndex).then(() => {
+              this.$set(this.prompts[latestPromptIndex], "response", result);
           });
+
 
           this.playAudio(audioData);
         });
