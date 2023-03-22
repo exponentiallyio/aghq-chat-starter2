@@ -48,7 +48,7 @@ export default {
 
   methods: {
 
-    async showTextSlowly(text, delay = 100) {
+    async showTextSlowly(text, delay = 50) {
         this.displayedResponse = '';
         for (let i = 0; i < text.length; i++) {
             this.displayedResponse += text.charAt(i);
@@ -182,12 +182,29 @@ export default {
           let result = json.text;
           let audioData = json.audioData;
 
+
+          // Push the prompt to the prompts array
+          this.prompts.push({
+            prompt: this.prompt,
+            response: "", // Set an empty response initially
+          });
+
+          // Show the text slowly and then update the response
           this.showTextSlowly(result).then(() => {
+            this.$set(this.prompts[this.prompts.length - 1], "response", result);
+          });
+
+
+          /*
+          this.showTextSlowly(result).then(() => {
+            
+            
             this.prompts.push({
               prompt: this.prompt,
               response: result,
             });
           });
+          */
 
 
           /* Show text all at once
@@ -238,6 +255,7 @@ export default {
   
       <h3 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em;">““The biggest mistake most people make is to not see themselves and others objectively.” – Ray Dalio</h3> <!-- Add margin to the subtitle -->
 
+      
       <form
         ref="form"
         @submit.prevent="submitForm"
