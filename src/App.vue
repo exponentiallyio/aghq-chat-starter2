@@ -225,8 +225,10 @@ export default {
         class="ui huge form bottom"
       >
         <div class="field">
-          <div class="ui right action left icon input">
-            <i class="microphone icon link" @click="listen"></i>
+          <div class="mic-container" style="display: inline-block; position: relative;">
+            <i class="microphone icon link" @click="listen" style="vertical-align: middle;"></i>
+          </div>
+          <div class="ui right action left icon input" style="display: inline-block; width: calc(100% - 30px);">
             <textarea
               ref="input"
               @keydown.esc.stop.prevent="stopListening"
@@ -242,6 +244,7 @@ export default {
           </div>
         </div>
       </form>
+
 
       <!-- OLD NON-resizable single line input
       <form
