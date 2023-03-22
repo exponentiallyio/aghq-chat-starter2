@@ -71,14 +71,23 @@ export default {
 
       $this.recognition.onresult = function (event) {
         const result = event.results[event.results.length - 1];
-        const transcript = result[0].transcript;
+        let transcript = result[0].transcript;
+
+        if ($this.prompt.trim() === "") {
+          // Capitalize the first letter of the transcript
+          transcript = transcript.charAt(0).toUpperCase() + transcript.slice(1);
+        }
 
         if (result.isFinal) {
-          $this.prompt += ", " + transcript; // Add a comma if there was a pause
+          if ($this.prompt.trim() !== "") {
+            $this.prompt += ", "; // Add a comma if there was a pause and textarea is not empty
+          }
+          $this.prompt += transcript;
         } else {
           $this.prompt += " " + transcript;
         }
       };
+
 
       /* TRANSCRIBE WITHOUT COMMAS FOR PAUSES
       $this.recognition.onresult = function (event) {
@@ -330,6 +339,8 @@ textarea.resize {
   border-bottom-right-radius: 0 !important;
   resize: none;
   overflow: hidden;
+  padding-left: 80px; /* Add left padding */
 }
+
 
 </style>
