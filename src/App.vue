@@ -21,6 +21,7 @@ export default {
       selectedPromptIndex: null,
       loading: false,
       listening: false,
+      continuousListening: false,
     };
   },
   mounted() {
@@ -41,6 +42,44 @@ export default {
       this.listening = false;
       this.recognition.stop();
     },
+
+    listen() {
+      if (this.listening) {
+        this.stopListening();
+        return;
+      }
+      const $this = this;
+      $this.listening = true;
+      $this.continuousListening = true;
+      $this.recognition = new speechRecognition();
+      $this.recognition.lang = $this.browserLanguage;
+      $this.recognition.continuous = true; // Add this line to make it listen continuously
+
+      $this.recognition.onstart = function () {
+        console.log("Speech recognition started.");
+      };
+
+      $this.recognition.onresult = function (event) {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        $this.prompt = transcript;
+      };
+
+      $this.recognition.onerror = function (event) {
+        console.log("Speech recognition error:", event.error);
+      };
+
+      $this.recognition.onend = function () {
+        if ($this.continuousListening) {
+          $this.recognition.start(); // Restart the recognition if it ended and continuousListening is still true
+        } else {
+          console.log("Speech recognition ended.");
+        }
+      };
+
+      $this.recognition.start();
+    },
+
+    /* BEFORE continuous listening
     listen() {
       if (this.listening) {
         this.stopListening();
@@ -59,6 +98,9 @@ export default {
         $this.listening = false;
       };
     },
+
+    */
+
     scrollToBottom() {
       this.$nextTick(() => {
         var promptElements = document.querySelectorAll(".prompt");
