@@ -189,11 +189,6 @@ export default {
             response: "", // Set an empty response initially
           });
 
-          // Show the text slowly and then update the response
-          this.showTextSlowly(result).then(() => {
-            this.$set(this.prompts[this.prompts.length - 1], "response", result);
-          });
-
 
           /*
           this.showTextSlowly(result).then(() => {
@@ -217,6 +212,15 @@ export default {
           this.prompt = "";
           this.loading = false;
           this.scrollToBottom();
+
+          // Get the index of the latest prompt
+          const latestPromptIndex = this.prompts.length - 1;
+
+          // Show the text slowly and then update the response
+          this.showTextSlowly(result).then(() => {
+            this.$set(this.prompts[latestPromptIndex], "response", result);
+          });
+
           this.playAudio(audioData);
         });
     },
