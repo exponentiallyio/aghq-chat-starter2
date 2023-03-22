@@ -339,7 +339,7 @@ textarea.resize {
   border-bottom-right-radius: 0 !important;
   resize: none;
   overflow: hidden;
-  padding-left: 80px; /* Add left padding */
+  padding-left: 150px; /* Add left padding */
 }
 
 
