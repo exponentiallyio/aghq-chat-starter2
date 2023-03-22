@@ -225,10 +225,8 @@ export default {
         class="ui huge form bottom"
       >
         <div class="field">
-          <div class="mic-container" style="display: inline-block; position: relative;">
-            <i class="microphone icon link" @click="listen" style="vertical-align: middle;"></i>
-          </div>
-          <div class="ui right action left icon input" style="display: inline-block; width: calc(100% - 30px);">
+          <div class="ui right action left icon input">
+            <i class="microphone icon link" @click="listen"></i>
             <textarea
               ref="input"
               @keydown.esc.stop.prevent="stopListening"
@@ -238,13 +236,12 @@ export default {
               @blur="focused = false"
               v-model="prompt"
               rows="1"
-              style="resize: none; padding: 0.67857143em 1em;"
+              style="resize: none; padding: 0.67857143em 1em; padding-left: 2.5em;"
             ></textarea>
             <button type="submit" class="ui button primary">Go!</button>
           </div>
         </div>
       </form>
-
 
       <!-- OLD NON-resizable single line input
       <form
