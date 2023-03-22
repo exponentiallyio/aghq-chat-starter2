@@ -37,6 +37,14 @@ export default {
       return this.prompts[this.selectedPromptIndex];
     },
   },
+  watch: {
+    prompt() {
+      this.$nextTick(() => {
+        this.autoResizeTextarea();
+      });
+    },
+  },
+
   methods: {
 
     stopListening() {
@@ -133,8 +141,11 @@ export default {
       audio.play();
     },
 
-
-
+    autoResizeTextarea() {
+      const textarea = this.$refs.input;
+      textarea.style.height = "auto";
+      textarea.style.height = textarea.scrollHeight + "px";
+    },
 
     submitForm() {
       this.loading = true;
@@ -313,4 +324,12 @@ textarea.resize {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
+
+.auto-resize-textarea {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  resize: none;
+  overflow: hidden;
+}
+
 </style>
