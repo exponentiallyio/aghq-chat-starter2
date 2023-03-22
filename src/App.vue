@@ -316,44 +316,36 @@ export default {
         v-if="prompts.length > 0"
         class="ui left aligned striped very relaxed table unstackable"
       >
-        <template v-for="prompt in prompts">
-          <tr class="prompt">
-            <td class="collapsing">
-              <em data-emoji=":thinking:" class="medium"></em>
-            </td>
-            <td>
+
+      <template v-for="(prompt, index) in prompts">
+        <tr class="prompt">
+          <td class="collapsing">
+            <em data-emoji=":thinking:" class="medium"></em>
+          </td>
+          <td>
+            <p>
+              <span v-html="prompt.prompt" class="ui large text"></span>
+            </p>
+          </td>
+        </tr>
+        <tr class="hover-parent response">
+          <td class="collapsing top aligned">
+            <em data-emoji=":crown:" class="medium"></em>
+          </td>
+          <td class="top aligned">
+            <div>
               <p>
-                <span v-html="prompt.prompt" class="ui large text"></span>
-              </p>
-            </td>
-          </tr>
-          <tr class="hover-parent response">
-            <td class="collapsing top aligned">
-              <em data-emoji=":crown:" class="medium"></em>
-            </td>
-            <td class="top aligned">
-              <div>
-                <p>
-                  <!-- Show delayed response -->
-                  <span
-                    v-html="displayedResponse"
-                    style="white-space: pre-line"
-                    class="ui large text"
+                <span
+                  v-html="prompt.displayedResponse"
+                  style="white-space: pre-line"
+                  class="ui large text"
                 ></span>
+              </p>
+            </div>
+          </td>
+        </tr>
+      </template>
 
-
-
-
-                  <!--span SHOW FULL RESPONSE
-                    v-html="prompt.response"
-                    style="white-space: pre-line"
-                    class="ui large text"
-                  ></span-->
-                </p>
-              </div>
-            </td>
-          </tr>
-        </template>
       </table>
 
       <button
