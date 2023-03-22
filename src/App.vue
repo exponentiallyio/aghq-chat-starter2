@@ -187,6 +187,7 @@ export default {
           this.prompts.push({
             prompt: this.prompt,
             response: "", // Set an empty response initially
+            displayedResponse: "", // Add this line to add an empty displayedResponse initially
           });
 
 
@@ -219,6 +220,7 @@ export default {
           // Show the text slowly and then update the response
           this.showTextSlowly(result).then(() => {
             this.$set(this.prompts[latestPromptIndex], "response", result);
+            this.$set(this.prompts[latestPromptIndex], "displayedResponse", this.displayedResponse); // Add this line to update the displayedResponse property in the prompts array
           });
 
           this.playAudio(audioData);
