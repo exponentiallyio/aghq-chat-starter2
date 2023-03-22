@@ -62,9 +62,22 @@ export default {
       };
 
       $this.recognition.onresult = function (event) {
+        const result = event.results[event.results.length - 1];
+        const transcript = result[0].transcript;
+
+        if (result.isFinal) {
+          $this.prompt += ", " + transcript; // Add a comma if there was a pause
+        } else {
+          $this.prompt += " " + transcript;
+        }
+      };
+
+      /* TRANSCRIBE WITHOUT COMMAS FOR PAUSES
+      $this.recognition.onresult = function (event) {
         const transcript = event.results[event.results.length - 1][0].transcript;
         $this.prompt += " " + transcript; // Append the new transcript to the existing prompt
       };
+      */
 
       $this.recognition.onerror = function (event) {
         console.log("Speech recognition error:", event.error);
