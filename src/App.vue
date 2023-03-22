@@ -61,7 +61,7 @@ export default {
 
       $this.recognition.onresult = function (event) {
         const transcript = event.results[event.results.length - 1][0].transcript;
-        $this.prompt = transcript;
+        $this.prompt += " " + transcript; // Append the new transcript to the existing prompt
       };
 
       $this.recognition.onerror = function (event) {
@@ -78,6 +78,7 @@ export default {
 
       $this.recognition.start();
     },
+
 
     /* BEFORE continuous listening
     listen() {
