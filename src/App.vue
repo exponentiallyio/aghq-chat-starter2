@@ -270,7 +270,7 @@ export default {
           </div>
         </div>
       </form>
-      <div class="loader"></div>
+      <div v-if="loading" class="loader"></div>
     </div>
 
     <div style="margin-top: 2em">
