@@ -197,7 +197,7 @@ export default {
 };
 </script>
 
-<template>
+<template class="app-container">
   <div class="ui basic segment" style="background-color: #272727;">
     <div
       v-show="listening"
@@ -309,8 +309,13 @@ p {
   line-height: 3em;
 }
 
+.app-container {
+  background-color: #272727;
+  min-height: 100vh;
+}
+
 .start-over-button {
-  color: lightgrey; /* Set the default color to light grey */
+  color: lightgrey; !important; /* Set the default color to light grey */
 }
 
 .start-over-button:hover {
