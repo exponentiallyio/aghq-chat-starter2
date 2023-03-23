@@ -107,7 +107,7 @@ app.post("/api", async (req, res) => {
     //const audioData = audioBuffer.toString("base64");
     // Google TTS ends
 
-    if (!req.body.textOnly) {
+    //if (!req.body.textOnly) {
       // ElevenLabs TTS Starts here
 
       const ttsResponse = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
@@ -130,7 +130,7 @@ app.post("/api", async (req, res) => {
       const audioBuffer = await ttsResponse.arrayBuffer();
       const audioData = Buffer.from(audioBuffer).toString("base64");
       
-    }
+    //}
     
     res.status(200).json({ text: textResponse, audioData });
   } catch (error) {
