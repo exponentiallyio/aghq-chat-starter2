@@ -100,32 +100,35 @@ app.post("/api", async (req, res) => {
 
     const data = await response.json();
     const textResponse = data.result;
+    let audioData = null;
 
     // Google textToSpeech function
     //const audioBuffer = await textToSpeech(textResponse);
     //const audioData = audioBuffer.toString("base64");
     // Google TTS ends
 
-    // ElevenLabs TTS Starts here
+    if (!req.body.textOnly) {
+      // ElevenLabs TTS Starts here
 
-    const ttsResponse = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": elevenLabsApiKey,
-      },
-      body: JSON.stringify({
-        text: textResponse,
-      }),
-    });
-    
-    const audioBuffer = await ttsResponse.arrayBuffer();
-    const audioData = Buffer.from(audioBuffer).toString("base64");
-    
-    if (!ttsResponse.ok) {
-      const clonedTtsResponse = ttsResponse.clone();
-      console.error('Error with ElevenLabs TTS request:', await clonedTtsResponse.text());
-      return res.status(ttsResponse.status).send('Error with ElevenLabs TTS request');
+      const ttsResponse = await fetch(`${elevenLabsApiBaseUrl}/v1/text-to-speech/${elevenLabsVoiceId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": elevenLabsApiKey,
+        },
+        body: JSON.stringify({
+          text: textResponse,
+        }),
+      });
+      
+      const audioBuffer = await ttsResponse.arrayBuffer();
+      const audioData = Buffer.from(audioBuffer).toString("base64");
+      
+      if (!ttsResponse.ok) {
+        const clonedTtsResponse = ttsResponse.clone();
+        console.error('Error with ElevenLabs TTS request:', await clonedTtsResponse.text());
+        return res.status(ttsResponse.status).send('Error with ElevenLabs TTS request');
+      }
     }
     
     res.status(200).json({ text: textResponse, audioData });

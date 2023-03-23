@@ -23,6 +23,7 @@ export default {
       listening: false,
       continuousListening: false,
       displayedResponse: '',
+      textOnly: false,
     };
   },
   mounted() {
@@ -153,6 +154,7 @@ export default {
         body: JSON.stringify({
           input: this.prompt,
           history: this.prompts,
+          textOnly: this.textOnly,
         }),
       })
         .then((response) => response.json())
@@ -189,7 +191,9 @@ export default {
           });
 
 
-          this.playAudio(audioData);
+          if (audioData) { // Add this conditional to check if audioData is not null
+            this.playAudio(audioData);
+          }
         });
     },
 
@@ -314,6 +318,13 @@ export default {
         <i class="icon undo"></i>
         Start over
       </button>
+      <button
+        @click="textOnly = !textOnly"
+        class="ui toggle right floated button"
+      >
+        Text Only
+      </button>
+
     </div>
   </div>
 </template>
