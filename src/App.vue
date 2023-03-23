@@ -248,7 +248,17 @@ export default {
               rows="1"
               style="resize: none; padding: 0.67857143em 1em; padding-left: 2.5em;"
             ></textarea>
-            <button type="submit" class="ui button primary">Go!</button>
+            <button type="submit" class="ui button primary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 12 12"
+                width="12"
+                height="12"
+                fill="white"
+              >
+                <polygon points="0,0 12,6 0,12" />
+              </svg>
+            </button>
           </div>
         </div>
       </form>
