@@ -318,11 +318,16 @@ export default {
         <i class="icon undo"></i>
         Start over
       </button>
-      <!-- Rounded switch -->
-      <label class="switch">
-        <input type="checkbox" v-model="textOnly">
-        <span class="slider round"></span>
-      </label>
+      <!-- Wrapper for Text label and Rounded switch -->
+      <div class="right floated">
+        <!-- Text label -->
+        <span style="margin-right: 8px;">Text Only</span>
+        <!-- Rounded switch -->
+        <label class="switch">
+          <input type="checkbox" v-model="textOnly">
+          <span class="slider round"></span>
+        </label>
+      </div>
 
 
     </div>
