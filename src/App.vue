@@ -321,7 +321,7 @@ export default {
       <!-- Wrapper for Text label and Rounded switch -->
       <div class="right floated">
         <!-- Text label -->
-        <span style="margin-right: 8px;">Text Only</span>
+        <span style="margin-right: 8px; color: lightgrey;">Text Only</span>
         <!-- Rounded switch -->
         <label class="switch">
           <input type="checkbox" v-model="textOnly">
