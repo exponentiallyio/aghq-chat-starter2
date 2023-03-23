@@ -225,7 +225,7 @@ export default {
         <span class="text">{{ appName }}</span>
       </h1>
   
-      <h3 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em; color: white;">““The biggest mistake most people make is to not see themselves and others objectively.” – Ray Dalio</h3> <!-- Add margin to the subtitle -->
+      <h4 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em; color: white;">Ray AI is your powerful personal mentor. For now, the focus is on communication in Leadership. Use the mic and speak naturally for best results.</h4> <!-- Add margin to the subtitle -->
 
       
       <form
