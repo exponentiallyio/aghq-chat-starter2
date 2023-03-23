@@ -307,7 +307,7 @@ export default {
         </tr>
       </template>
       </table>
-      <div v-if="loading" class="loader"></div>
+      <div style="margin-top: 10px;" v-if="loading" class="loader"></div>
       <button
         v-if="prompts.length > 0"
         @click="clearPrompts"
