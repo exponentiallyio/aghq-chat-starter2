@@ -225,8 +225,11 @@ export default {
         <span class="text">{{ appName }}</span>
       </h1>
   
-      <h4 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em; color: white;">Ray AI is your powerful personal mentor. For now, the focus is on communication in Leadership. Use the mic and speak naturally for best results.</h4> <!-- Add margin to the subtitle -->
-
+      <h4 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em; color: white;">
+        Ray AI is your powerful personal mentor.<br />
+        For now, the focus is on communication in Leadership.<br />
+        Use the mic and speak naturally for best results.
+      </h4>
       
       <form
         ref="form"
