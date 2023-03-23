@@ -315,11 +315,11 @@ p {
 }
 
 .start-over-button {
-  color: lightgrey; !important; /* Set the default color to light grey */
+  color: lightgrey !important;
 }
 
 .start-over-button:hover {
-  color: white !important; /* Set the color to white on hover */
+  color: white !important;
 }
 
 a.hovering {
