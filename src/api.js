@@ -118,16 +118,16 @@ app.post("/api", async (req, res) => {
         text: textResponse,
       }),
     });
-
+    
     const audioBuffer = await ttsResponse.arrayBuffer();
     const audioData = Buffer.from(audioBuffer).toString("base64");
-
+    
     if (!ttsResponse.ok) {
-      console.error('Error with ElevenLabs TTS request:', await ttsResponse.text());
+      const clonedTtsResponse = ttsResponse.clone();
+      console.error('Error with ElevenLabs TTS request:', await clonedTtsResponse.text());
       return res.status(ttsResponse.status).send('Error with ElevenLabs TTS request');
     }
-    //ElevenLabs TTS Ends
-
+    
     res.status(200).json({ text: textResponse, audioData });
   } catch (error) {
     console.error('Unexpected error:', error);
