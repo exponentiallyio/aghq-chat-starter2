@@ -249,6 +249,7 @@ export default {
               @blur="focused = false"
               v-model="prompt"
               rows="1"
+              placeholder="Speak with Ray.."
               style="resize: none; padding: 0.67857143em 1em; padding-left: 2.5em;"
             ></textarea>
             <button type="submit" class="ui button primary">
@@ -320,6 +321,10 @@ export default {
 <style scoped>
 p {
   line-height: 3em;
+}
+
+textarea::placeholder {
+  color: rgb(156, 156, 156);
 }
 
 .app-container {
