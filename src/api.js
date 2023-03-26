@@ -51,12 +51,12 @@ async function textToSpeech(text) {
 }
 
 
-// Using Agent-HQ endpoint
-
+/* Using Agent-HQ endpoint
 let endpoint = "https://app.agent-hq.io";
 if (import.meta.env.VITE_AGHQ_ENDPOINT) {
   endpoint = import.meta.env.VITE_AGHQ_ENDPOINT;
 }
+*/
 
 const api_access_token = import.meta.env.VITE_AGHQ_API_ACCESS_TOKEN;
 
@@ -146,7 +146,7 @@ app.post("/api", async (req, res) => {
     const threadId = lastThread ? lastThread.threadId : null;
 
     const retuneData = await getRetuneResponse(input, threadId);
-    const textResponse = retuneData.response;
+    const textResponse = retuneData.response.value;
 
     const audioBuffer = await textToSpeech(textResponse);
     const audioData = audioBuffer.toString("base64");
