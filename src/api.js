@@ -5,11 +5,14 @@ import express from "express";
 // const elevenLabsApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 // const elevenLabsVoiceId = import.meta.env.VITE_ELEVENLABS_VOICE_ID;
 
-// Added
+// Google Cloud TTS variables
 const googleCloudLanguageCode = import.meta.env.VITE_GOOGLE_CLOUD_LANGUAGE_CODE;
 const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
 
+// Retune Chatbot API variables
+const retuneApiKey = import.meta.env.VITE_RETUNE_API_KEY;
+const retuneApiBaseUrl = 'https://retune.so/api';
 
 // Updated function to use Google Cloud Text-to-speech
 async function textToSpeech(text) {
@@ -47,6 +50,7 @@ async function textToSpeech(text) {
 }
 
 
+// Using Agent-HQ endpoint
 
 let endpoint = "https://app.agent-hq.io";
 if (import.meta.env.VITE_AGHQ_ENDPOINT) {
@@ -57,10 +61,55 @@ const api_access_token = import.meta.env.VITE_AGHQ_API_ACCESS_TOKEN;
 
 const agent_id = import.meta.env.VITE_AGHQ_AGENT_ID;
 
+// RETUNE FUNCTIONS
+// Function to create a new thread with Retune
+async function createNewThread() {
+  const response = await fetch(`${retuneApiBaseUrl}/chat/new-thread`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Retune-API-Key": retuneApiKey,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Creating new thread failed: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.threadId;
+}
+
+// Function to get a response from Retune in an existing thread
+async function getRetuneResponse(threadId, input) {
+  const response = await fetch(`${retuneApiBaseUrl}/chat/response`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Retune-API-Key": retuneApiKey,
+    },
+    body: JSON.stringify({
+      threadId,
+      input,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Getting response from Retune failed: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+
+// Express app setup
+
 const app = express();
 app.use(express.json());
 
 
+/*
 app.post("/api", async (req, res) => {
   try {
     const response = await fetch(`${endpoint}/api/v1/agents/${agent_id}/run`, {
@@ -94,9 +143,29 @@ app.post("/api", async (req, res) => {
     res.status(500).send('Unexpected error');
   }
 });
+*/
 
+// Main API route using Retune API for chatbot
+app.post("/api", async (req, res) => {
+  try {
+    let threadId = req.body.threadId;
 
+    if (!threadId) {
+      threadId = await createNewThread();
+    }
 
+    const retuneResponse = await getRetuneResponse(threadId, req.body.input);
+    const textResponse = retuneResponse.output.text;
+
+    const audioBuffer = await textToSpeech(textResponse);
+    const audioData = audioBuffer.toString("base64");
+
+    res.status(200).json({ text: textResponse, audioData, threadId });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).send("Unexpected error");
+  }
+});
 
 
 

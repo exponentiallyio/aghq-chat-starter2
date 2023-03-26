@@ -21,6 +21,7 @@ export default {
       selectedPromptIndex: null,
       loading: false,
       listening: false,
+      threadId: null, // for Retune
     };
   },
   mounted() {
@@ -88,12 +89,15 @@ export default {
         body: JSON.stringify({
           input: this.prompt,
           history: this.prompts,
+          //threadId: this.threadId, // Include the Retune threadId in the request body
+          threadId: "11edcbd2-a27b-3e70-8546-6980bb97a2b4",
         }),
       })
         .then((response) => response.json())
         .then((json) => {
           let result = json.text;
           let audioData = json.audioData;
+          this.threadId = json.threadId; // Store the received Retune threadId
 
           this.prompts.push({
             prompt: this.prompt,
