@@ -11,9 +11,9 @@ const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
 
 // Retune Chatbot API variables
-const retuneApiBaseUrl = import.meta.env.VITE_RETUNE_API_BASE_URL;
 const retuneApiKey = import.meta.env.VITE_RETUNE_API_KEY;
-const retuneModelId = import.meta.env.VITE_RETUNE_MODEL_ID;
+const retuneThreadId = import.meta.env.VITE_RETUNE_THREAD_ID;
+const retuneApiUrl = import.meta.env.VITE_RETUNE_API_CONTINUE_URL;
 
 // Updated function to use Google Cloud Text-to-speech
 async function textToSpeech(text) {
@@ -141,21 +141,31 @@ app.post("/api", async (req, res) => {
 // Main API route using Retune API for chatbot
 app.post("/api", async (req, res) => {
   try {
-    const { input, history } = req.body;
-    const lastThread = history.length > 0 ? history[history.length - 1] : null;
-    const threadId = lastThread ? lastThread.threadId : null;
+    // Replace Agent-HQ API call with Retune API call
+    const response = await fetch(retuneApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Retune-API-Key": retuneApiKey,
+      },
+      body: JSON.stringify({
+        threadId: retuneThreadId,
+        input: req.body.input,
+      }),
+    });
 
-    const retuneData = await getRetuneResponse(input, threadId);
-    const textResponse = retuneData.response.value;
+    if (!response.ok) {
+      console.error('Error with Retune request:', await response.text());
+      return res.status(response.status).send('Error with Retune request');
+    }
+
+    const data = await response.json();
+    const textResponse = data.response.value;
 
     const audioBuffer = await textToSpeech(textResponse);
     const audioData = audioBuffer.toString("base64");
 
-    res.status(200).json({
-      text: textResponse,
-      audioData,
-      threadId: retuneData.threadId,
-    });
+    res.status(200).json({ text: textResponse, audioData });
   } catch (error) {
     console.error('Unexpected error:', error);
     res.status(500).send('Unexpected error');
