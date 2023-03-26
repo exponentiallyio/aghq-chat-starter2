@@ -11,8 +11,9 @@ const googleCloudVoiceID = import.meta.env.VITE_GOOGLE_CLOUD_VOICE_ID;
 const googleCloudApiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
 
 // Retune Chatbot API variables
+const retuneApiBaseUrl = import.meta.env.VITE_RETUNE_API_BASE_URL;
 const retuneApiKey = import.meta.env.VITE_RETUNE_API_KEY;
-const retuneApiBaseUrl = 'https://retune.so/api';
+const retuneModelId = import.meta.env.VITE_RETUNE_MODEL_ID;
 
 // Updated function to use Google Cloud Text-to-speech
 async function textToSpeech(text) {
@@ -63,43 +64,35 @@ const agent_id = import.meta.env.VITE_AGHQ_AGENT_ID;
 
 // RETUNE FUNCTIONS
 // Function to create a new thread with Retune
-async function createNewThread() {
-  const response = await fetch(`${retuneApiBaseUrl}/chat/new-thread`, {
+async function getRetuneResponse(input, threadId = null) {
+  const requestBody = {
+    input,
+  };
+
+  let endpoint = `${retuneApiBaseUrl}/api/chat/${retuneModelId}/`;
+
+  if (threadId) {
+    endpoint += "response";
+    requestBody.threadId = threadId;
+  } else {
+    endpoint += "new-thread";
+  }
+
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "X-Retune-API-Key": retuneApiKey,
     },
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
-    throw new Error(`Creating new thread failed: ${response.statusText}`);
+    console.error('Error with Retune request:', await response.text());
+    throw new Error(`Retune API call failed: ${response.statusText}`);
   }
 
-  const data = await response.json();
-  return data.threadId;
-}
-
-// Function to get a response from Retune in an existing thread
-async function getRetuneResponse(threadId, input) {
-  const response = await fetch(`${retuneApiBaseUrl}/chat/response`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Retune-API-Key": retuneApiKey,
-    },
-    body: JSON.stringify({
-      threadId,
-      input,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Getting response from Retune failed: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data;
+  return await response.json();
 }
 
 
@@ -148,25 +141,26 @@ app.post("/api", async (req, res) => {
 // Main API route using Retune API for chatbot
 app.post("/api", async (req, res) => {
   try {
-    let threadId = req.body.threadId;
+    const { input, history } = req.body;
+    const lastThread = history.length > 0 ? history[history.length - 1] : null;
+    const threadId = lastThread ? lastThread.threadId : null;
 
-    if (!threadId) {
-      threadId = await createNewThread();
-    }
-
-    const retuneResponse = await getRetuneResponse(threadId, req.body.input);
-    const textResponse = retuneResponse.output.text;
+    const retuneData = await getRetuneResponse(input, threadId);
+    const textResponse = retuneData.response;
 
     const audioBuffer = await textToSpeech(textResponse);
     const audioData = audioBuffer.toString("base64");
 
-    res.status(200).json({ text: textResponse, audioData, threadId });
+    res.status(200).json({
+      text: textResponse,
+      audioData,
+      threadId: retuneData.threadId,
+    });
   } catch (error) {
-    console.error("Unexpected error:", error);
-    res.status(500).send("Unexpected error");
+    console.error('Unexpected error:', error);
+    res.status(500).send('Unexpected error');
   }
 });
-
 
 
 
