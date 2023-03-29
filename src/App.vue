@@ -230,7 +230,7 @@ export default {
         z-index: 9999;
         padding-top: 2em;
         padding-bottom: 2em;
-        background: ##272727;
+        background: #272727;
       "
     >
       <h1 class="ui center aligned page header" style="color: white">
@@ -287,7 +287,7 @@ export default {
       </form>
     </div>
 
-    <div style="margin-top: 2em">
+    <div style="margin-top: 2em; z-index: 1;">
       <table
         v-if="prompts.length > 0"
         class="ui left aligned striped very relaxed table unstackable"
