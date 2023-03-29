@@ -90,6 +90,8 @@ app.post("/api", async (req, res) => {
       body: JSON.stringify({
         input: req.body.input,
         history: req.body.history,
+        save: true,
+        conversation_id: req.body.conversationId
       }),
     });
 
@@ -99,6 +101,7 @@ app.post("/api", async (req, res) => {
     }
 
     const data = await response.json();
+    const conversationId = data.conversation.id;
     const textResponse = data.result;
     let audioData = null;
 
@@ -120,7 +123,7 @@ app.post("/api", async (req, res) => {
           text: textResponse,
         }),
       });
-    
+
       if (!ttsResponse.ok) {
         const clonedTtsResponse = ttsResponse.clone();
         console.error('Error with ElevenLabs TTS request:', await clonedTtsResponse.text());
@@ -129,10 +132,10 @@ app.post("/api", async (req, res) => {
 
       const audioBuffer = await ttsResponse.arrayBuffer();
       audioData = Buffer.from(audioBuffer).toString("base64");
-      
+
     }
-    
-    res.status(200).json({ text: textResponse, audioData });
+
+    res.status(200).json({ text: textResponse, audioData, conversationId });
   } catch (error) {
     console.error('Unexpected error:', error);
     res.status(500).send('Unexpected error');

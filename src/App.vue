@@ -15,6 +15,7 @@ export default {
   },
   data() {
     return {
+      conversationId: null,
       focused: false,
       prompt: "",
       prompts: [],
@@ -22,11 +23,15 @@ export default {
       loading: false,
       listening: false,
       continuousListening: false,
-      displayedResponse: '',
+      displayedResponse: "",
       textOnly: false,
     };
   },
   mounted() {
+    if (localStorage.getItem("conversationId")) {
+      this.conversationId = localStorage.getItem("conversationId");
+    }
+
     window
       .$(this.$refs.microphone)
       .transition("set looping")
@@ -48,15 +53,18 @@ export default {
   },
 
   methods: {
-
-    async showTextSlowly(text, index, delay = 50) {
-        this.prompts[index].displayedResponse = "";
-        for (let i = 0; i < text.length; i++) {
-            this.prompts[index].displayedResponse += text.charAt(i);
-            await new Promise((resolve) => setTimeout(resolve, delay));
-        }
+    resetConversation() {
+      this.conversationId = null;
+      localStorage.removeItem("conversationId");
     },
 
+    async showTextSlowly(text, index, delay = 50) {
+      this.prompts[index].displayedResponse = "";
+      for (let i = 0; i < text.length; i++) {
+        this.prompts[index].displayedResponse += text.charAt(i);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    },
 
     stopListening() {
       this.listening = false;
@@ -98,7 +106,6 @@ export default {
           $this.prompt += " " + transcript;
         }
       };
-
 
       /* TRANSCRIBE WITHOUT COMMAS FOR PAUSES
       $this.recognition.onresult = function (event) {
@@ -155,13 +162,17 @@ export default {
           input: this.prompt,
           history: this.prompts,
           textOnly: this.textOnly,
+          conversationId: this.conversationId,
         }),
       })
         .then((response) => response.json())
         .then((json) => {
           let result = json.text;
           let audioData = json.audioData;
-
+          if (json.conversationId) {
+            localStorage.setItem("conversationId", json.conversationId);
+            this.conversationId = json.conversationId;
+          }
 
           // Push the prompt to the prompts array
           this.prompts.push({
@@ -169,7 +180,6 @@ export default {
             response: "", // Set an empty response initially
             displayedResponse: "", // Add this line to add an empty displayedResponse initially
           });
-
 
           /* Show text all at once
           this.prompts.push({
@@ -185,24 +195,22 @@ export default {
           // Get the index of the latest prompt
           const latestPromptIndex = this.prompts.length - 1;
 
-      
           this.showTextSlowly(result, latestPromptIndex).then(() => {
-              this.$set(this.prompts[latestPromptIndex], "response", result);
+            this.$set(this.prompts[latestPromptIndex], "response", result);
           });
 
-
-          if (audioData) { // Add this conditional to check if audioData is not null
+          if (audioData) {
+            // Add this conditional to check if audioData is not null
             this.playAudio(audioData);
           }
         });
     },
-
   },
 };
 </script>
 
 <template class="app-container">
-  <div class="ui basic segment" style="background-color: #272727;">
+  <div class="ui basic segment" style="background-color: #272727">
     <div
       v-show="listening"
       class="ui active blurring page inverted content dimmer"
@@ -225,16 +233,19 @@ export default {
         background: ##272727;
       "
     >
-      <h1 class="ui center aligned page header" style="color: white;">
+      <h1 class="ui center aligned page header" style="color: white">
         <span class="text">{{ appName }}</span>
       </h1>
-  
-      <h4 class="ui center aligned header" style="margin-top: 1em; margin-bottom: 2em; color: white;">
+
+      <h4
+        class="ui center aligned header"
+        style="margin-top: 1em; margin-bottom: 2em; color: white"
+      >
         Ray AI is your powerful personal mentor.<br />
         For now, the focus is on communication in Leadership.<br />
         Use the mic and speak naturally for best results.
       </h4>
-      
+
       <form
         ref="form"
         @submit.prevent="submitForm"
@@ -254,7 +265,11 @@ export default {
               v-model="prompt"
               rows="1"
               placeholder="Speak with Ray.."
-              style="resize: none; padding: 0.67857143em 1em; padding-left: 2.5em;"
+              style="
+                resize: none;
+                padding: 0.67857143em 1em;
+                padding-left: 2.5em;
+              "
             ></textarea>
             <button type="submit" class="ui button primary">
               <svg
@@ -277,57 +292,65 @@ export default {
         v-if="prompts.length > 0"
         class="ui left aligned striped very relaxed table unstackable"
       >
-
-      <template v-for="(prompt, index) in prompts">
-        <tr class="prompt">
-          <td class="collapsing">
-            <em data-emoji=":speech_balloon:" class="medium"></em>
-          </td>
-          <td>
-            <p>
-              <span v-html="prompt.prompt" class="ui large text"></span>
-            </p>
-          </td>
-        </tr>
-        <tr class="hover-parent response">
-          <td class="collapsing top aligned">
-            <em data-emoji=":crown:" class="medium"></em>
-          </td>
-          <td class="top aligned">
-            <div>
+        <template v-for="(prompt, index) in prompts">
+          <tr class="prompt">
+            <td class="collapsing">
+              <em data-emoji=":speech_balloon:" class="medium"></em>
+            </td>
+            <td>
               <p>
-                <span 
-                  v-html="prompt.displayedResponse || prompt.response" 
-                  style="white-space: pre-line" 
-                  class="ui large text">
-                </span>
+                <span v-html="prompt.prompt" class="ui large text"></span>
               </p>
-            </div>
-          </td>
-        </tr>
-      </template>
+            </td>
+          </tr>
+          <tr class="hover-parent response">
+            <td class="collapsing top aligned">
+              <em data-emoji=":crown:" class="medium"></em>
+            </td>
+            <td class="top aligned">
+              <div>
+                <p>
+                  <span
+                    v-html="prompt.displayedResponse || prompt.response"
+                    style="white-space: pre-line"
+                    class="ui large text"
+                  >
+                  </span>
+                </p>
+              </div>
+            </td>
+          </tr>
+        </template>
       </table>
-      <div style="margin-top: 10px;" v-if="loading" class="loader"></div>
+
+      <div style="margin-top: 10px" v-if="loading" class="loader"></div>
+
       <button
         v-if="prompts.length > 0"
         @click="clearPrompts"
         class="ui tertiary icon button start-over-button"
-        >
+      >
         <i class="icon undo"></i>
         Start over
       </button>
+
       <!-- Wrapper for Text label and Rounded switch -->
       <div class="right floated">
         <!-- Text label -->
-        <span style="margin-right: 8px; color: lightgrey;">Text Only</span>
+        <span style="margin-right: 8px; color: lightgrey">Text Only</span>
         <!-- Rounded switch -->
         <label class="switch">
-          <input type="checkbox" v-model="textOnly">
+          <input type="checkbox" v-model="textOnly" />
           <span class="slider round"></span>
         </label>
       </div>
+    </div>
 
-
+    <div class="ui basic segment">
+      <div v-if="conversationId" class="ui label">
+        Conversation saved ({{ conversationId }})
+        <i class="icon delete" @click="resetConversation"></i>
+      </div>
     </div>
   </div>
 </template>
@@ -378,11 +401,11 @@ p {
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 
 input:checked + .slider:before {
@@ -400,31 +423,30 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-
 .loader {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   display: block;
-  margin:15px auto;
+  margin: 15px auto;
   position: relative;
-  color: #FFF;
+  color: #fff;
   box-sizing: border-box;
   animation: animloader 1s linear infinite alternate;
 }
 
 @keyframes animloader {
   0% {
-    box-shadow: -38px -12px ,  -14px 0,  14px 0, 38px 0;
+    box-shadow: -38px -12px, -14px 0, 14px 0, 38px 0;
   }
   33% {
-    box-shadow: -38px 0px, -14px -12px,  14px 0, 38px 0;
+    box-shadow: -38px 0px, -14px -12px, 14px 0, 38px 0;
   }
   66% {
-    box-shadow: -38px 0px , -14px 0, 14px -12px, 38px 0;
+    box-shadow: -38px 0px, -14px 0, 14px -12px, 38px 0;
   }
   100% {
-    box-shadow: -38px 0 , -14px 0, 14px 0 , 38px -12px;
+    box-shadow: -38px 0, -14px 0, 14px 0, 38px -12px;
   }
 }
 
@@ -465,6 +487,4 @@ textarea.resize {
   overflow: hidden;
   padding-left: 150px; /* Add left padding */
 }
-
-
 </style>
