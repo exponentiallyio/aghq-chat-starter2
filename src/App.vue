@@ -16,6 +16,10 @@ export default {
       type: String,
       default: import.meta.env.VITE_APP_SUBTITLE || "",
     },
+    searchText: {
+      type: String,
+      default: import.meta.env.VITE_APP_SEARCHTEXT || "",
+    },
   },
   data() {
     return {
@@ -266,7 +270,7 @@ export default {
               @blur="focused = false"
               v-model="prompt"
               rows="1"
-              placeholder="Speak with Ray.."
+              :placeholder="appSubtitle"
               style="
                 resize: none;
                 padding: 0.67857143em 1em;
