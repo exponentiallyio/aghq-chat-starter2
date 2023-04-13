@@ -270,7 +270,7 @@ export default {
               @blur="focused = false"
               v-model="prompt"
               rows="1"
-              :placeholder="appSubtitle"
+              :placeholder="searchText"
               style="
                 resize: none;
                 padding: 0.67857143em 1em;
