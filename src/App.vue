@@ -10,7 +10,11 @@ export default {
     },
     appName: {
       type: String,
-      default: import.meta.env.VITE_APP_NAME || "Master Comms Mastermind",
+      default: import.meta.env.VITE_APP_NAME || "Mastermind",
+    },
+    appSubtitle: {
+      type: String,
+      default: import.meta.env.VITE_APP_SUBTITLE || "",
     },
   },
   data() {
@@ -241,9 +245,7 @@ export default {
         class="ui center aligned header"
         style="margin-top: 1em; margin-bottom: 2em; color: white"
       >
-        Ray AI is your powerful personal mentor.<br />
-        For now, the focus is on communication in Leadership.<br />
-        Use the mic and speak naturally for best results.
+        {{ appSubtitle }}
       </h4>
 
       <form
